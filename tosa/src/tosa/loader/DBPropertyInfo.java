@@ -22,7 +22,6 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 public class DBPropertyInfo extends PropertyInfoBase {
-
   private final String _name;
   private final IType _type;
   private final DBColumnImpl _column;
@@ -91,33 +90,33 @@ public class DBPropertyInfo extends PropertyInfoBase {
 
   private class DBPropertyAccessor implements IPropertyAccessor {
     @Override
-      public void setValue(Object ctx, Object value) {
-        if (_column.isFK() && value != null) {
-          ((CachedDBObject) ctx).getColumns().put(getColumnName(), ((CachedDBObject) value).getColumns().get(DBTypeInfo.ID_COLUMN));
-        } else {
-          ((CachedDBObject) ctx).getColumns().put(getColumnName(), value);
-        }
-      }
+		public void setValue(Object ctx, Object value) {
+			if (_column.isFK() && value != null) {
+				((CachedDBObject) ctx).getColumns().put(getColumnName(), ((CachedDBObject) value).getColumns().get(DBTypeInfo.ID_COLUMN));
+			} else {
+				((CachedDBObject) ctx).getColumns().put(getColumnName(), value);
+			}
+		}
 
-      @Override
-      public Object getValue(Object ctx) {
-        Object columnValue = ((CachedDBObject) ctx).getColumns().get(getColumnName());
-        if (_column.isFK() && columnValue != null) {
-          try {
-            Object resolvedFK = ((CachedDBObject) ctx).getCachedValues().get(getColumnName());
-            if (resolvedFK == null) {
-              resolvedFK = new QueryExecutor().selectById(getOwnersType().getName() + "." + getName(),
-                  (IDBType) _type, columnValue);
-              ((CachedDBObject) ctx).getCachedValues().put(getColumnName(), resolvedFK);
-            }
-            return resolvedFK;
-          } catch (SQLException e) {
-            throw new RuntimeException(e);
-          }
-        } else {
-          return columnValue;
-        }
-      }
+		@Override
+		public Object getValue(Object ctx) {
+			Object columnValue = ((CachedDBObject) ctx).getColumns().get(getColumnName());
+			if (_column.isFK() && columnValue != null) {
+				try {
+					Object resolvedFK = ((CachedDBObject) ctx).getCachedValues().get(getColumnName());
+					if (resolvedFK == null) {
+						resolvedFK = new QueryExecutor().selectById(getOwnersType().getName() + "." + getName(),
+																												(IDBType) _type, columnValue);
+						((CachedDBObject) ctx).getCachedValues().put(getColumnName(), resolvedFK);
+					}
+					return resolvedFK;
+				} catch (SQLException e) {
+					throw new RuntimeException(e);
+				}
+			} else {
+				return columnValue;
+			}
+		}
   }
 
 }

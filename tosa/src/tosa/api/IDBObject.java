@@ -22,5 +22,11 @@ public interface IDBObject extends IGosuObject {
 
   void update() throws SQLException;
 
+  /**
+   * Updates the object, editing the database even if it was created using the constructor rather than one
+   * of the methods like fromId.
+   */
+	void forceUpdate() throws SQLException;
+
   void delete() throws SQLException;
 }

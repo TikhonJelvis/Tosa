@@ -58,7 +58,7 @@ public class CachedDBObject implements IDBObject {
     _columns.put(columnName, value);
   }
 
-  public Map<String, Object> getColumns() {
+	public Map<String, Object> getColumns() {
     return _columns;
   }
 
@@ -73,6 +73,12 @@ public class CachedDBObject implements IDBObject {
     _columns = new HashMap<String, Object>();
     _cachedValues = new HashMap<String, Object>();
   }
+
+	@Override
+	public void forceUpdate() throws SQLException {
+		_new = false;
+		update();
+	}
 
   @Override
   public void update() throws SQLException {

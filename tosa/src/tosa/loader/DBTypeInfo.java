@@ -43,6 +43,7 @@ public class DBTypeInfo extends BaseTypeInfo implements ITypeInfo {
   private IMethodInfo _getMethod;
   private IMethodInfo _idMethod;
   private IMethodInfo _updateMethod;
+  private IMethodInfo _forceUpdateMethod;
   private IMethodInfo _deleteMethod;
   private IMethodInfo _countMethod;
   private IMethodInfo _countWithSqlMethod;
@@ -86,6 +87,18 @@ public class DBTypeInfo extends BaseTypeInfo implements ITypeInfo {
           public Object handleCall(Object ctx, Object... args) {
             try {
               ((CachedDBObject) ctx).update();
+            } catch (SQLException e) {
+              throw new RuntimeException(e);
+            }
+            return null;
+          }
+        }).build(this);
+    _forceUpdateMethod = new MethodInfoBuilder().withName("forceUpdate")
+        .withCallHandler(new IMethodCallHandler() {
+          @Override
+          public Object handleCall(Object ctx, Object... args) {
+            try {
+              ((CachedDBObject) ctx).forceUpdate();
             } catch (SQLException e) {
               throw new RuntimeException(e);
             }
@@ -269,7 +282,7 @@ public class DBTypeInfo extends BaseTypeInfo implements ITypeInfo {
           }
         }).build(this);
 
-    _methods = new ArrayList<IMethodInfo>(Arrays.asList(_getMethod, _idMethod, _updateMethod, _deleteMethod, _countWithSqlMethod,
+    _methods = new ArrayList<IMethodInfo>(Arrays.asList(_getMethod, _idMethod, _updateMethod, _forceUpdateMethod, _deleteMethod, _countWithSqlMethod,
         _countMethod, _findWithSqlMethod, _findMethod, _findSortedMethod, _findPagedMethod,
         _findSortedPagedMethod));
 
@@ -327,6 +340,9 @@ public class DBTypeInfo extends BaseTypeInfo implements ITypeInfo {
     }
     if ("update".equals(methodName) && (params == null || params.length == 0)) {
       return _updateMethod;
+    }
+    if ("forceUpdate".equals(methodName) && (params == null || params.length == 0)) {
+      return _forceUpdateMethod;
     }
     if ("delete".equals(methodName) && (params == null || params.length == 0)) {
       return _deleteMethod;
