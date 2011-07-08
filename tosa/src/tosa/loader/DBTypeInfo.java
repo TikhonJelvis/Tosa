@@ -42,6 +42,7 @@ public class DBTypeInfo extends BaseTypeInfo implements ITypeInfo {
 
   private IMethodInfo _getMethod;
   private IMethodInfo _idMethod;
+	private IMethodInfo _mapMethod;
   private IMethodInfo _updateMethod;
   private IMethodInfo _forceUpdateMethod;
   private IMethodInfo _deleteMethod;
@@ -79,6 +80,14 @@ public class DBTypeInfo extends BaseTypeInfo implements ITypeInfo {
           @Override
           public Object handleCall(Object ctx, Object... args) {
             return ((CachedDBObject) ctx).getColumns().get(ID_COLUMN);
+          }
+        }).build(this);
+    _mapMethod = new MethodInfoBuilder().withName("toMap")
+        .withReturnType(IJavaType.MAP)
+        .withCallHandler(new IMethodCallHandler() {
+          @Override
+          public Object handleCall(Object ctx, Object... args) {
+            return ((CachedDBObject) ctx).getColumns();
           }
         }).build(this);
     _updateMethod = new MethodInfoBuilder().withName("update")
@@ -282,7 +291,7 @@ public class DBTypeInfo extends BaseTypeInfo implements ITypeInfo {
           }
         }).build(this);
 
-    _methods = new ArrayList<IMethodInfo>(Arrays.asList(_getMethod, _idMethod, _updateMethod, _forceUpdateMethod, _deleteMethod, _countWithSqlMethod,
+    _methods = new ArrayList<IMethodInfo>(Arrays.asList(_getMethod, _idMethod, _mapMethod, _updateMethod, _forceUpdateMethod, _deleteMethod, _countWithSqlMethod,
         _countMethod, _findWithSqlMethod, _findMethod, _findSortedMethod, _findPagedMethod,
         _findSortedPagedMethod));
 
@@ -337,6 +346,9 @@ public class DBTypeInfo extends BaseTypeInfo implements ITypeInfo {
     }
     if ("toID".equals(methodName) && (params == null || params.length == 0)) {
       return _idMethod;
+    }
+    if ("toMap".equals(methodName) && (params == null || params.length == 0)) {
+      return _mapMethod;
     }
     if ("update".equals(methodName) && (params == null || params.length == 0)) {
       return _updateMethod;

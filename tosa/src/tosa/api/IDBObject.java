@@ -4,6 +4,7 @@ import gw.lang.reflect.IType;
 import gw.lang.reflect.gs.IGosuObject;
 
 import java.sql.SQLException;
+import java.util.Map;
 
 /**
  * IDBObject is the interface implemented by all database objects in Tosa.  It provides basic operations
@@ -27,6 +28,8 @@ public interface IDBObject extends IGosuObject {
    * of the methods like fromId.
    */
 	void forceUpdate() throws SQLException;
+
+	Map toMap();
 
   void delete() throws SQLException;
 }
